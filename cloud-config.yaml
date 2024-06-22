@@ -1,4 +1,14 @@
 #cloud-config
+users:
+    name: zymat
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    shell: /bin/bash
+    ssh_authorized_keys:
+        - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICZVfEr6eaopNH+V3e4yOwywdiQt9HNiE9zvWtFmdfpi
+        - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOslya+KlMziz+0j0mJUbtwuxMvgb2I+5Bv0WH3+6w8s
+        - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKgHL6Evp0LXPmpxblsFW6VwPH00TcoA3D5Jgv1FOkdk
+
+
 apt:
     sources:
         docker.list:
@@ -15,16 +25,7 @@ write_files:
     -   path: /etc/sysctl.d/enabled_ipv4_forwarding.conf
         content: |
             net.ipv4.conf.all.forwarding=1
-
-users:
-    name: zymat
-    groups: users, docker, sudo
-    sudo: ALL=(ALL) NOPASSWD:ALL
-    shell: /bin/bash
-    ssh_authorized_keys:
-        - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICZVfEr6eaopNH+V3e4yOwywdiQt9HNiE9zvWtFmdfpi
-        - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOslya+KlMziz+0j0mJUbtwuxMvgb2I+5Bv0WH3+6w8s
-        - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKgHL6Evp0LXPmpxblsFW6VwPH00TcoA3D5Jgv1FOkdk
+            
 
 packages:
     - apt-transport-https
@@ -40,6 +41,8 @@ packages:
     - fail2ban
 
 runcmd:
+    - chmod 700 /home/zymat  # Set directory permissions for zymat user
+    - chown zymat:zymat /home/zymat/.ssh
     - printf "[sshd]\nenabled = true\nbanaction = iptables-multiport" > /etc/fail2ban/jail.local
     - systemctl enable fail2ban
     - ufw allow OpenSSH
