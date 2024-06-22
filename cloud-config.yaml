@@ -46,7 +46,8 @@ runcmd:
     - curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
     - sudo apt update
     - sudo apt install caddy
-    - caddy run --config /home/zymat/zymat_devops/Caddyfile
+    - sudo cp /home/zymat/zymat_devops/Caddyfile /etc/caddy/Caddyfile
+    - caddy run
 
 power_state:
     mode: reboot
