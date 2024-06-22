@@ -1,31 +1,19 @@
 #cloud-config
-users:
-    name: zymat
-    sudo: ALL=(ALL) NOPASSWD:ALL
-    shell: /bin/bash
-    ssh_authorized_keys:
-        - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICZVfEr6eaopNH+V3e4yOwywdiQt9HNiE9zvWtFmdfpi
-        - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOslya+KlMziz+0j0mJUbtwuxMvgb2I+5Bv0WH3+6w8s
-        - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKgHL6Evp0LXPmpxblsFW6VwPH00TcoA3D5Jgv1FOkdk
-
-
-apt:
-    sources:
-        docker.list:
-            source: deb [arch=amd64] https://download.docker.com/linux/ubuntu $RELEASE stable
-            keyid: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
-
-package_update: true
-package_upgrade: true
-
 groups:
     - docker
 
-write_files:
-    -   path: /etc/sysctl.d/enabled_ipv4_forwarding.conf
-        content: |
-            net.ipv4.conf.all.forwarding=1
-            
+users:
+    -   name: root
+        lock_passwd: true
+    -   name: zymat
+        groups: users, admin, docker
+        sudo: ALL=(ALL) NOPASSWD:ALL
+        shell: /bin/bash
+        ssh_authorized_keys:
+            - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOslya+KlMziz+0j0mJUbtwuxMvgb2I+5Bv0WH3+6w8s gustavnybro@hackerman-desktop
+
+chpasswd:
+    expire: false
 
 packages:
     - apt-transport-https
@@ -33,19 +21,20 @@ packages:
     - curl
     - gnupg-agent
     - software-properties-common
-    - docker-ce
-    - docker-ce-cli
-    - containerd.io
     - git
-    - ufw
-    - fail2ban
 
 runcmd:
-    - chmod 700 /home/zymat  # Set directory permissions for zymat user
-    - chown zymat:zymat /home/zymat/.ssh
-    - printf "[sshd]\nenabled = true\nbanaction = iptables-multiport" > /etc/fail2ban/jail.local
-    - systemctl enable fail2ban
-    - ufw allow OpenSSH
-    - ufw enable
+    - sed -i -e '/^PermitRootLogin/s/^.*$/PermitRootLogin no/' /etc/ssh/sshd_config
+    - sed -i -e '/^PasswordAuthentication/s/^.*$/PasswordAuthentication no/' /etc/ssh/sshd_config
+    - sed -i '$a AllowUsers zymat' /etc/ssh/sshd_config
+    - curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
+    - add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+    - apt-get update -y
+    - apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+    - systemctl start docker
+    - systemctl enable docker
     - git clone https://github.com/Gustav2/zymat_devops.git /home/zymat/zymat_devops
-    - reboot
+
+power_state:
+    mode: reboot
+    condition: True
