@@ -58,4 +58,5 @@ runcmd:
     - sed -i -e '/^\(#\|\)AllowAgentForwarding/s/^.*$/AllowAgentForwarding no/' /etc/ssh/sshd_config
     - sed -i -e '/^\(#\|\)AuthorizedKeysFile/s/^.*$/AuthorizedKeysFile .ssh\/authorized_keys/' /etc/ssh/sshd_config
     - sed -i '$a AllowUsers holu' /etc/ssh/sshd_config
+    - git clone https://github.com/Gustav2/zymat_devops.git /home/zymat/zymat_devops
     - reboot
