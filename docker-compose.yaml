@@ -29,6 +29,9 @@ services:
         links:
             - db
             - valkey
+        volumes:
+            - /var/www/static:/var/www/static
+
         labels:
             - "com.centurylinklabs.watchtower.post-update=/post-update.sh"
 
