@@ -11,6 +11,8 @@ users:
         shell: /bin/bash
         ssh_authorized_keys:
             - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOslya+KlMziz+0j0mJUbtwuxMvgb2I+5Bv0WH3+6w8s gustavnybro@hackerman-desktop
+            - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICZVfEr6eaopNH+V3e4yOwywdiQt9HNiE9zvWtFmdfpi gustavnybro@hackerman-laptop
+            - ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKgHL6Evp0LXPmpxblsFW6VwPH00TcoA3D5Jgv1FOkdk dani@Daniel-Desktop
 
 chpasswd:
     expire: false
@@ -34,6 +36,10 @@ runcmd:
     - systemctl start docker
     - systemctl enable docker
     - git clone https://github.com/Gustav2/zymat_devops.git /home/zymat/zymat_devops
+    - chown -R zymat:zymat /home/zymat/zymat_devops
+    - mkdir /home/zymat/.docker
+    - cp /home/zymat/zymat_devops/config.json /home/zymat/.docker/config.json
+    - chown -R zymat:zymat /home/zymat/.docker
 
 power_state:
     mode: reboot
