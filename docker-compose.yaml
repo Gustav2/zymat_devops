@@ -11,13 +11,70 @@ services:
             - NEXT_SHARP_PATH=/tmp/node_modules/sharp
 
         env_file:
-            -  .env
-
+            - .env.frontend
         restart: always
+
+    zymat_backend:
+        container_name: zymat_backend
+        image: ghcr.io/zymat-dk/zymat_backend:main
+        ports:
+            - "8000:8000"
+
+        env_file:
+            - .env.backend
+        restart: always
+        depends_on:
+            - valkey
+            - db:
+                condition: service_healthy
+        links:
+            - db
+            - valkey
+        labels:
+            - "com.centurylinklabs.watchtower.post-update=/post-update.sh"
+
+    db:
+        image: postgres:16-bookworm
+        container_name: db
+        volumes:
+            - db_data:/var/lib/postgresql/data
+        ports:
+            - 5432:5432
+        env_file: .env.backend
+        user: postgres
+        healthcheck:
+            test: [ "CMD-SHELL", "pg_isready" ]
+            interval: 1s
+            timeout: 5s
+            retries: 10
+        restart: always
+        labels:
+            - "com.centurylinklabs.watchtower.enable=false"
+
+    valkey:
+        image: valkey/valkey:7-bookworm
+        container_name: valkey
+        volumes:
+            - valkey:/data
+        env_file: .env.backend
+        ports:
+            - 6379:6379
+        restart: always
+        stop_grace_period: 3s
+        labels:
+            - "com.centurylinklabs.watchtower.enable=false"
 
     watchtower:
         image: containrrr/watchtower
+        environment:
+            WATCHTOWER_LIFECYCLE_HOOKS: true
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
             - /home/zymat/.docker/config.json:/config.json
         command: --interval 30
+        restart: always
+
+
+volumes:
+    db_data:
+    valkey:
