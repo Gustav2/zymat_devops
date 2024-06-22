@@ -1,0 +1,13 @@
+name: zymat_frontend
+
+services:
+    zymat_frontend:
+        container_name: zymat_frontend
+        image: ghcr.io/zymat-dk/zymat_frontend:main
+        ports:
+            - "3000:3000"
+
+        env_file:
+            -  .env
+
+        restart: always
