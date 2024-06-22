@@ -19,5 +19,5 @@ services:
         image: containrrr/watchtower
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
-            - /home/gustavnybro/.docker/config.json:/config.json
+            - /home/zymat/.docker/config.json:/config.json
         command: --interval 30
