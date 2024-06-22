@@ -7,6 +7,9 @@ services:
         ports:
             - "3000:3000"
 
+        environment:
+            - NEXT_SHARP_PATH=/tmp/node_modules/sharp
+
         env_file:
             -  .env
 
@@ -16,5 +19,5 @@ services:
         image: containrrr/watchtower
         volumes:
             - /var/run/docker.sock:/var/run/docker.sock
-            - /root/.docker/config.json:/config.json
+            - /home/gustavnybro/.docker/config.json:/config.json
         command: --interval 30
