@@ -22,7 +22,7 @@ system_info:
 
 users:
     name: zymat
-    groups: users, admin, docker, sudo
+    groups: users, docker, sudo
     sudo: ALL=(ALL) NOPASSWD:ALL
     shell: /bin/bash
     ssh_authorized_keys:
