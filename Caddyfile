@@ -1,0 +1,18 @@
+{
+    admin :2019
+}
+
+zymat.dk {
+    reverse_proxy 127.0.0.1:3000
+}
+
+api.zymat.dk {
+    route {
+        handle_path /static/* {
+            root * /var/www/static/
+            file_server
+        }
+
+        reverse_proxy 127.0.0.1:8000
+    }
+}

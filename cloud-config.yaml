@@ -24,6 +24,8 @@ packages:
     - gnupg-agent
     - software-properties-common
     - git
+    - debian-keyring
+    - debian-archive-keyring
 
 runcmd:
     - sed -i -e '/^PermitRootLogin/s/^.*$/PermitRootLogin no/' /etc/ssh/sshd_config
@@ -40,6 +42,11 @@ runcmd:
     - mkdir /home/zymat/.docker
     - cp /home/zymat/zymat_devops/config.json /home/zymat/.docker/config.json
     - chown -R zymat:zymat /home/zymat/.docker
+    - curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+    - curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
+    - sudo apt update
+    - sudo apt install caddy
+    - caddy run --config /home/zymat/zymat_devops/Caddyfile
 
 power_state:
     mode: reboot
