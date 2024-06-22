@@ -16,7 +16,7 @@ services:
 
     zymat_backend:
         container_name: zymat_backend
-        image: ghcr.io/zymat-dk/zymat_backend:main
+        image: ghcr.io/zymat-dk/zymat_backend:latest
         ports:
             - "8000:8000"
 
